@@ -202,6 +202,13 @@ https.get(url, (res) => {
                 textEl.textContent = 'BODHI MINDCARE';
                 textEl.style.cssText = 'font-family:"Instrument Serif",serif;font-size:20px;font-weight:400;letter-spacing:0.08em;text-transform:uppercase;color:rgb(64,52,39);white-space:nowrap;display:flex;align-items:center;';
                 
+                // Hide all other elements inside the logo anchor (like the "Home" text)
+                Array.from(anchor.children).forEach(child => {
+                    if (child !== logoContainer) {
+                        child.style.display = 'none';
+                    }
+                });
+                
                 logoContainer.style.display = 'none';
                 anchor.appendChild(textEl);
                 
@@ -274,31 +281,28 @@ https.get(url, (res) => {
             font-weight: 400 !important;
             color: rgb(64,52,39) !important;
         }
+        @media (max-width: 810px) {
+            .rebranded-logo {
+                font-size: 15px !important;
+                min-width: 0 !important;
+                margin-right: 10px !important;
+            }
+        }
         header, nav {
             display: flex !important;
             align-items: center !important;
         }
-        :has(> .rebranded-logo),
-        :has(> * > .rebranded-logo),
-        :has(> * > * > .rebranded-logo),
-        :has(> * > * > * > .rebranded-logo),
-        :has(> * > * > * > * > .rebranded-logo) {
+        a:has(> .rebranded-logo),
+        div:has(> a > .rebranded-logo) {
             width: auto !important;
             height: auto !important;
             max-width: none !important;
             max-height: none !important;
             aspect-ratio: auto !important;
             overflow: visible !important;
-            border-radius: 0 !important;
-            border: none !important;
-            background: transparent !important;
-            background-color: transparent !important;
         }
-        :has(> .rebranded-logo):after,
-        :has(> * > .rebranded-logo):after,
-        :has(> * > * > .rebranded-logo):after,
-        :has(> * > * > * > .rebranded-logo):after,
-        :has(> * > * > * > * > .rebranded-logo):after {
+        a:has(> .rebranded-logo):after,
+        div:has(> a > .rebranded-logo):after {
             display: none !important;
             content: none !important;
             border: none !important;
