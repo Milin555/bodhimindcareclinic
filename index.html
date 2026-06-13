@@ -835,6 +835,80 @@
         .success-summary-value {
             font-weight: 650;
         }
+
+        /* Custom Mobile Menu Styling */
+        #bodhi-mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(240, 234, 213, 0.96);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 99998;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            padding: 24px 32px;
+            box-sizing: border-box;
+        }
+        #bodhi-mobile-menu.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            font-size: 38px;
+            color: #403427;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px;
+        }
+        .mobile-menu-links {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            padding-bottom: 80px;
+        }
+        .mobile-menu-link {
+            font-family: 'Instrument Serif', serif;
+            font-size: 36px;
+            color: #403427;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            transition: opacity 0.2s;
+        }
+        .mobile-menu-link:hover {
+            opacity: 0.7;
+        }
+        .mobile-menu-link.book-btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 650;
+            background: #403427;
+            color: #feffee;
+            padding: 14px 36px;
+            border-radius: 30px;
+            margin-top: 12px;
+            letter-spacing: normal;
+            text-transform: none;
+            box-shadow: 0 6px 16px rgba(64, 52, 39, 0.15);
+        }
     `;
     document.head.appendChild(style);
 
@@ -964,6 +1038,77 @@
     modalRoot.id = 'bodhi-booking-modal-root';
     modalRoot.innerHTML = modalHtml;
     document.body.appendChild(modalRoot);
+
+    // Inject Custom Mobile Menu HTML
+    const mobileMenuHtml = `
+    <div id="bodhi-mobile-menu">
+        <div class="mobile-menu-header">
+            <span class="rebranded-logo" style="font-size:22px !important; min-width:0 !important; margin:0 !important;">Bodhi Mindcare</span>
+            <button class="mobile-menu-close">&times;</button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="./" class="mobile-menu-link">Home</a>
+            <a href="./about-us" class="mobile-menu-link">About</a>
+            <a href="./services" class="mobile-menu-link">Services</a>
+            <a href="./contact-us" class="mobile-menu-link book-btn">Book a session</a>
+        </div>
+    </div>
+    `;
+
+    const mobileMenuRoot = document.createElement('div');
+    mobileMenuRoot.id = 'bodhi-mobile-menu-root';
+    mobileMenuRoot.innerHTML = mobileMenuHtml;
+    document.body.appendChild(mobileMenuRoot);
+
+    const mobileMenu = document.getElementById('bodhi-mobile-menu');
+    const closeMenuBtn = mobileMenu.querySelector('.mobile-menu-close');
+
+    function openMobileMenu() {
+        mobileMenu.classList.add('active');
+    }
+
+    function closeMobileMenu() {
+        mobileMenu.classList.remove('active');
+    }
+
+    closeMenuBtn.addEventListener('click', closeMobileMenu);
+
+    // Mobile menu toggle interceptor
+    document.addEventListener('click', (e) => {
+        const phoneNav = document.querySelector('.framer-v-w7do1a');
+        if (phoneNav) {
+            const trigger = phoneNav.querySelector('.framer-1iiosaf');
+            if (trigger && trigger.contains(e.target)) {
+                // If it's a link click inside the open menu, let it proceed or handle it
+                const link = e.target.closest('a');
+                if (link) {
+                    if (link.classList.contains('book-btn') || link.getAttribute('href').includes('contact-us')) {
+                        e.preventDefault();
+                        closeMobileMenu();
+                        openBookingModal();
+                    }
+                    return;
+                }
+                
+                e.preventDefault();
+                e.stopPropagation();
+                openMobileMenu();
+            }
+        }
+    });
+
+    // Close menu when clicking links
+    mobileMenu.querySelectorAll('.mobile-menu-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            if (link.classList.contains('book-btn') || link.getAttribute('href').includes('contact-us')) {
+                e.preventDefault();
+                closeMobileMenu();
+                openBookingModal();
+            } else {
+                closeMobileMenu();
+            }
+        });
+    });
 
     // Booking modal controller variables
     const modal = document.getElementById('bodhi-booking-modal');
