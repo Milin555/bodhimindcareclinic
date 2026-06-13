@@ -1,48 +1,13 @@
 import fs from 'fs';
 import https from 'https';
 
-const url = 'https://harmonise.framer.website/';
+const pages = [
+  { url: 'https://harmonise.framer.website/', output: './index.html' },
+  { url: 'https://harmonise.framer.website/about-us', output: './about-us.html' },
+  { url: 'https://harmonise.framer.website/services', output: './services.html' }
+];
 
-https.get(url, (res) => {
-  let data = '';
-  res.on('data', (chunk) => data += chunk);
-  res.on('end', () => {
-    let html = data;
-    
-    // 1. Static string replacements in HTML source
-    html = html.replace(/HARMONISE/g, 'BODHI MINDCARE');
-    html = html.replace(/Harmonise/g, 'BODHI MINDCARE');
-    html = html.replace(/© 2025 Harmonise Wellness LLC/g, '© 2026 BODHI MINDCARE. All Rights Reserved.');
-    html = html.replace(/© 2026 Bodhi MindCare Clinic Wellness LLC/g, '© 2026 BODHI MINDCARE. All Rights Reserved.');
-    html = html.replace(/harmonise/g, 'bodhimindcare');
-    html = html.replace(/2025/g, '2026');
-    html = html.replace(/info@harmonise\.com/g, 'info@bodhimindcare.clinic');
-    html = html.replace(/info@bodhimindcare\.com/g, 'info@bodhimindcare.clinic');
-    html = html.replace(/mailto:info@harmonise\.com/g, 'mailto:info@bodhimindcare.clinic');
-    html = html.replace(/mailto:info@bodhimindcare\.com/g, 'mailto:info@bodhimindcare.clinic');
-    
-    // Static replacements for names
-    html = html.replace(/Dr\. Amy Lin/g, 'Dr. Harvee Shah');
-    html = html.replace(/Dr\. Min Kim/g, 'Dr. Harvee Shah');
-    html = html.replace(/Amy Lin/g, 'Dr. Harvee Shah');
-    html = html.replace(/Min Kim/g, 'Dr. Harvee Shah');
-    html = html.replace(/Jess Reyes/g, 'Dr. Harvee Shah');
-    html = html.replace(/Anna Burke/g, 'Dr. Harvee Shah');
-    html = html.replace(/David Chen/g, 'Dr. Harvee Shah');
-    html = html.replace(/Dr\. Lin/g, 'Dr. Harvee Shah');
-    html = html.replace(/Dr\. Kim/g, 'Dr. Harvee Shah');
-    
-    // Static replacements for address & contact
-    html = html.replace(/248 Pine St/g, '108, Meraki Latitude, Old Padra Rd');
-    html = html.replace(/248 Pine Street Suite 310/g, '108, Meraki Latitude, Old Padra Rd');
-    html = html.replace(/Portland, Oregon/g, 'Vadodara, Gujarat 390007');
-    html = html.replace(/Portland/g, 'Vadodara');
-    html = html.replace(/Oregon/g, 'Gujarat 390007');
-    html = html.replace(/\+1 234 567 890/g, '079904 69284');
-    html = html.replace(/1234567890/g, '07990469284');
-    
-    // 2. Inject the client-side deep replacement watcher (MutationObserver)
-    const clientFixScript = `
+const clientFixScript = `
 <script>
 (function() {
     const replacements = [
@@ -152,7 +117,7 @@ https.get(url, (res) => {
                         span.style.opacity = '0';
                         span.style.transform = isVertical ? 'translateY(15px)' : 'translateX(-12px)';
                         span.style.animation = 'rebranded-letter-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-                        span.style.animationDelay = \`\${idx * 0.05}s\`;
+                        span.style.animationDelay = (idx * 0.05) + 's';
                         el.appendChild(span);
                     });
                 }
@@ -250,17 +215,6 @@ https.get(url, (res) => {
     // Inject CSS for custom animations, logo wrapper fixes, and the modern booking modal
     const style = document.createElement('style');
     style.textContent = \`
-        /* Hide Framer watermark and template buttons */
-        #__framer-badge-container,
-        .__framer-badge,
-        .framer-7c208x-container,
-        #template-overlay {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-
         @keyframes rebranded-letter-fade-in {
             from { opacity: 0; transform: translateX(-12px); }
             to { opacity: 1; transform: translateX(0); }
@@ -320,6 +274,17 @@ https.get(url, (res) => {
             width: auto !important;
             height: auto !important;
             overflow: visible !important;
+        }
+
+        /* Hide Framer watermark and template buttons */
+        #__framer-badge-container,
+        .__framer-badge,
+        .framer-7c208x-container,
+        #template-overlay {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
 
         /* Booking Modal Styling */
@@ -468,11 +433,6 @@ https.get(url, (res) => {
             display: grid;
             grid-template-columns: 1.2fr 0.8fr;
             gap: 24px;
-        }
-        @media (max-width: 600px) {
-            .datetime-container {
-                grid-template-columns: 1fr;
-            }
         }
         .calendar-wrapper {
             background: #efe9d5;
@@ -776,10 +736,55 @@ https.get(url, (res) => {
             text-transform: none;
             box-shadow: 0 6px 16px rgba(64, 52, 39, 0.15);
         }
+
+        @media (max-width: 600px) {
+            .booking-modal-card {
+                width: 95% !important;
+                max-height: 95vh !important;
+                border-radius: 16px !important;
+            }
+            .booking-modal-header {
+                padding: 16px 20px !important;
+            }
+            .booking-modal-header h2 {
+                font-size: 24px !important;
+            }
+            .booking-modal-body {
+                padding: 20px 16px !important;
+            }
+            .booking-modal-footer {
+                padding: 16px 20px !important;
+            }
+            .datetime-container {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+            }
+            .calendar-wrapper {
+                padding: 12px !important;
+            }
+            .calendar-grid {
+                gap: 4px !important;
+            }
+            .calendar-day {
+                font-size: 12px !important;
+            }
+            .service-option {
+                padding: 14px !important;
+            }
+            .service-details h3 {
+                font-size: 14px !important;
+            }
+            .service-details p {
+                font-size: 11px !important;
+            }
+            .service-price {
+                font-size: 20px !important;
+            }
+        }
     \`;
     document.head.appendChild(style);
 
-    // Inject Booking Modal elements into body
+    // Inject Booking Modal HTML
     const modalHtml = \`
     <div id="bodhi-booking-modal">
         <div class="booking-modal-card">
@@ -915,9 +920,9 @@ https.get(url, (res) => {
         </div>
         <div class="mobile-menu-links">
             <a href="./" class="mobile-menu-link">Home</a>
-            <a href="./about-us" class="mobile-menu-link">About</a>
-            <a href="./services" class="mobile-menu-link">Services</a>
-            <a href="./contact-us" class="mobile-menu-link book-btn">Book a session</a>
+            <a href="./about-us.html" class="mobile-menu-link">About</a>
+            <a href="./services.html" class="mobile-menu-link">Services</a>
+            <a href="./contact-us.html" class="mobile-menu-link book-btn">Book a session</a>
         </div>
     </div>
     \`;
@@ -940,27 +945,42 @@ https.get(url, (res) => {
 
     closeMenuBtn.addEventListener('click', closeMobileMenu);
 
+    // Helper to identify the hamburger icon SVG
+    function isHamburgerSvg(svg) {
+        if (!svg || svg.tagName.toLowerCase() !== 'svg') return false;
+        const viewBox = svg.getAttribute('viewBox');
+        const html = svg.innerHTML || '';
+        return (
+            viewBox === '0 0 18 14' || 
+            svg.querySelector('use[href*="svg845177526"]') ||
+            svg.querySelector('use[*|href*="svg845177526"]') ||
+            html.includes('svg845177526')
+        );
+    }
+
     // Mobile menu toggle interceptor
     document.addEventListener('click', (e) => {
-        const phoneNav = document.querySelector('.framer-v-w7do1a');
-        if (phoneNav) {
-            const trigger = phoneNav.querySelector('.framer-1iiosaf');
-            if (trigger && trigger.contains(e.target)) {
-                // If it's a link click inside the open menu, let it proceed or handle it
-                const link = e.target.closest('a');
-                if (link) {
-                    if (link.classList.contains('book-btn') || link.getAttribute('href').includes('contact-us')) {
-                        e.preventDefault();
-                        closeMobileMenu();
-                        openBookingModal();
-                    }
-                    return;
-                }
-                
-                e.preventDefault();
-                e.stopPropagation();
-                openMobileMenu();
+        let isHamburgerClick = false;
+        const target = e.target;
+        
+        // 1. Direct click on SVG or inside SVG
+        const svg = target.closest('svg');
+        if (svg) {
+            if (isHamburgerSvg(svg)) {
+                isHamburgerClick = true;
             }
+        } else {
+            // 2. Click on the container wrapper of the SVG (up to 2 levels up)
+            const childSvg = target.querySelector('svg');
+            if (childSvg && isHamburgerSvg(childSvg)) {
+                isHamburgerClick = true;
+            }
+        }
+        
+        if (isHamburgerClick) {
+            e.preventDefault();
+            e.stopPropagation();
+            openMobileMenu();
         }
     });
 
@@ -1067,7 +1087,7 @@ https.get(url, (res) => {
             modal.querySelector('.booking-modal-footer').style.display = 'none';
             document.getElementById('summary-service').textContent = selectedService;
             const dateStr = selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-            document.getElementById('summary-datetime').textContent = \`\${dateStr} at \${selectedSlot}\`;
+            document.getElementById('summary-datetime').textContent = dateStr + ' at ' + selectedSlot;
             document.getElementById('summary-name').textContent = document.getElementById('booking-name').value;
         }
     }
@@ -1292,11 +1312,82 @@ https.get(url, (res) => {
 </script>
 </body>
 `;
-    html = html.replace('</body>', clientFixScript);
-    fs.writeFileSync('./index.html', html);
-    console.log('Path A v11: Horizontal/Vertical logos and animation fixes complete!');
-  });
-}).on('error', (e) => {
-  console.error('Download failed:', e.message);
-});
 
+function processPage(pageUrl, outputPath) {
+  return new Promise((resolve, reject) => {
+    https.get(pageUrl, (res) => {
+      let data = '';
+      res.on('data', (chunk) => data += chunk);
+      res.on('end', () => {
+        let html = data;
+        
+        // 1. Static string replacements in HTML source
+        html = html.replace(/HARMONISE/g, 'BODHI MINDCARE');
+        html = html.replace(/Harmonise/g, 'BODHI MINDCARE');
+        html = html.replace(/© 2025 Harmonise Wellness LLC/g, '© 2026 BODHI MINDCARE. All Rights Reserved.');
+        html = html.replace(/© 2026 Bodhi MindCare Clinic Wellness LLC/g, '© 2026 BODHI MINDCARE. All Rights Reserved.');
+        html = html.replace(/harmonise/g, 'bodhimindcare');
+        html = html.replace(/2025/g, '2026');
+        html = html.replace(/info@harmonise\.com/g, 'info@bodhimindcare.clinic');
+        html = html.replace(/info@bodhimindcare\.com/g, 'info@bodhimindcare.clinic');
+        html = html.replace(/mailto:info@harmonise\.com/g, 'mailto:info@bodhimindcare.clinic');
+        html = html.replace(/mailto:info@bodhimindcare\.com/g, 'mailto:info@bodhimindcare.clinic');
+        
+        html = html.replace(/Dr\. Amy Lin/g, 'Dr. Harvee Shah');
+        html = html.replace(/Dr\. Min Kim/g, 'Dr. Harvee Shah');
+        html = html.replace(/Amy Lin/g, 'Dr. Harvee Shah');
+        html = html.replace(/Min Kim/g, 'Dr. Harvee Shah');
+        html = html.replace(/Jess Reyes/g, 'Dr. Harvee Shah');
+        html = html.replace(/Anna Burke/g, 'Dr. Harvee Shah');
+        html = html.replace(/David Chen/g, 'Dr. Harvee Shah');
+        html = html.replace(/Dr\. Lin/g, 'Dr. Harvee Shah');
+        html = html.replace(/Dr\. Kim/g, 'Dr. Harvee Shah');
+        
+        html = html.replace(/248 Pine St/g, '108, Meraki Latitude, Old Padra Rd');
+        html = html.replace(/248 Pine Street Suite 310/g, '108, Meraki Latitude, Old Padra Rd');
+        html = html.replace(/Portland, Oregon/g, 'Vadodara, Gujarat 390007');
+        html = html.replace(/Portland/g, 'Vadodara');
+        html = html.replace(/Oregon/g, 'Gujarat 390007');
+        html = html.replace(/\+1 234 567 890/g, '079904 69284');
+        html = html.replace(/1234567890/g, '07990469284');
+
+        // Rewrite relative/absolute navigation links to local HTML files
+        html = html.replace(/href="\.\/about-us"/g, 'href="./about-us.html"');
+        html = html.replace(/href="\/about-us"/g, 'href="./about-us.html"');
+        html = html.replace(/href="https:\/\/harmonise\.framer\.website\/about-us"/g, 'href="./about-us.html"');
+
+        html = html.replace(/href="\.\/services"/g, 'href="./services.html"');
+        html = html.replace(/href="\/services"/g, 'href="./services.html"');
+        html = html.replace(/href="https:\/\/harmonise\.framer\.website\/services"/g, 'href="./services.html"');
+
+        html = html.replace(/href="\.\/contact-us"/g, 'href="./contact-us.html"');
+        html = html.replace(/href="\/contact-us"/g, 'href="./contact-us.html"');
+        html = html.replace(/href="https:\/\/harmonise\.framer\.website\/contact-us"/g, 'href="./contact-us.html"');
+
+        // Inject clientFixScript
+        html = html.replace('</body>', clientFixScript);
+        
+        fs.writeFileSync(outputPath, html);
+        console.log(`Successfully processed and output: ${outputPath}`);
+        resolve();
+      });
+    }).on('error', (e) => {
+      console.error(`Download failed for ${pageUrl}:`, e.message);
+      reject(e);
+    });
+  });
+}
+
+// Process all pages sequentially
+async function run() {
+  for (const page of pages) {
+    try {
+      await processPage(page.url, page.output);
+    } catch (err) {
+      console.error(`Failed to process page: ${page.url}`, err);
+    }
+  }
+  console.log("All pages successfully built!");
+}
+
+run();
