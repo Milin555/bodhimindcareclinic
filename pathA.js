@@ -243,6 +243,17 @@ https.get(url, (res) => {
     // Inject CSS for custom animations, logo wrapper fixes, and the modern booking modal
     const style = document.createElement('style');
     style.textContent = \`
+        /* Hide Framer watermark and template buttons */
+        #__framer-badge-container,
+        .__framer-badge,
+        .framer-7c208x-container,
+        #template-overlay {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
         @keyframes rebranded-letter-fade-in {
             from { opacity: 0; transform: translateX(-12px); }
             to { opacity: 1; transform: translateX(0); }
@@ -1043,6 +1054,36 @@ https.get(url, (res) => {
         checkValidity();
     }
 
+    function removeWatermarks() {
+        const badges = document.querySelectorAll('[id*="badge"], [class*="badge"], [class*="framer-badge"]');
+        badges.forEach(b => {
+            b.style.setProperty('display', 'none', 'important');
+            b.style.setProperty('visibility', 'hidden', 'important');
+            b.style.setProperty('opacity', '0', 'important');
+            b.style.setProperty('pointer-events', 'none', 'important');
+        });
+
+        const allElements = document.querySelectorAll('*');
+        allElements.forEach(el => {
+            if (el.children.length === 0 && el.textContent.trim() === 'Get Template') {
+                let parent = el;
+                for (let i = 0; i < 6; i++) {
+                    if (parent && parent !== document.body) {
+                        const style = window.getComputedStyle(parent);
+                        if (style.position === 'fixed' || parent.className.includes('-container') || parent.id.includes('overlay')) {
+                            parent.style.setProperty('display', 'none', 'important');
+                            parent.style.setProperty('visibility', 'hidden', 'important');
+                            parent.style.setProperty('opacity', '0', 'important');
+                            parent.style.setProperty('pointer-events', 'none', 'important');
+                            break;
+                        }
+                        parent = parent.parentElement;
+                    }
+                }
+            }
+        });
+    }
+
     // Set up MutationObserver to intercept changes in DOM
     const observer = new MutationObserver((mutations) => {
         observer.disconnect();
@@ -1067,6 +1108,7 @@ https.get(url, (res) => {
             fixVerticalLogos();
             fixLogos();
         }
+        removeWatermarks();
 
         observer.observe(document.documentElement, {
             childList: true,
@@ -1089,11 +1131,13 @@ https.get(url, (res) => {
         replaceText(document.body);
         fixVerticalLogos();
         fixLogos();
+        removeWatermarks();
     });
     window.addEventListener("load", () => {
         replaceText(document.body);
         fixVerticalLogos();
         fixLogos();
+        removeWatermarks();
     });
 })();
 </script>
