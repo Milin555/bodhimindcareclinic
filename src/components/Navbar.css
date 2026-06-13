@@ -1,0 +1,62 @@
+.navbar {
+  position: fixed;
+  top: 30px;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.navbar-inner {
+  background-color: rgba(240, 234, 213, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  gap: 1rem;
+  pointer-events: auto;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+.nav-logo {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+}
+
+.nav-links a {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-pill);
+  transition: background-color 0.2s ease;
+}
+
+.nav-links a:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.nav-cta {
+  background-color: var(--text-primary);
+  color: var(--text-light);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-pill);
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.nav-cta:hover {
+  opacity: 0.9;
+}
